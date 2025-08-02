@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from calculators.auth_service import authenticate_user
 from calculators.auth_service import calculate_credit_score
-
+from models.ml_model import get_user_prediction
 router = APIRouter()
 class Credentials(BaseModel):
    username: str
@@ -23,6 +23,9 @@ class UserData(BaseModel):
    new_credit_inquiries_last_6m:int
    late_payment_count:int
 
+class UserPredictionInput(BaseModel):
+    username: str  # Accept only the username as input
+
 
 @router.post("/calculate_credit_score")
 def calculate_credit_score_api(user_data: UserData):
@@ -36,3 +39,19 @@ def calculate_credit_score_api(user_data: UserData):
         return {"credit_score": credit_score}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+@router.post("/predict")
+def predict_user_score(input_data: UserPredictionInput):
+    """
+    API endpoint to get user prediction.
+    Expects JSON input with username.
+    """
+    try:
+        # Call the get_user_prediction function with the username
+        prediction = get_user_prediction(input_data.username)
+        if prediction is None:
+            raise HTTPException(status_code=404, detail="Prediction could not be generated for the given username.")
+        return {"username": input_data.username, "prediction": prediction}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))  
