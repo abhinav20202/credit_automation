@@ -1,0 +1,4 @@
+user_id,username,password,gross_monthly_income,total_monthly_debt_payments,total_credit_limit,credit_history_length_months,new_credit_inquiries_last_6m,late_payment_count
+8683022,user3,password,38097,4319,147287,29,2,2
+11475220,user3,password,38893,4397,148615,29,2,2
+1135238,user2,password,26169,3129,112839,28,2,1
