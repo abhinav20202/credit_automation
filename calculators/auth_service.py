@@ -4,30 +4,16 @@ import os
 CSV_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'csp.csv')
 
 def authenticate_user(username: str, password: str):
-    try:
-        df = pd.read_csv(CSV_FILE)
-    except FileNotFoundError:
-        return None, "CSV file not found"
-    
-    # Filter rows for the given username and password
-    user_rows = df[(df['username'] == username) & (df['password'] == password)]
-    
-    if not user_rows.empty:
-        # Aggregate data for all rows corresponding to the username
-        aggregated_data = {
-            'gross_monthly_income': user_rows['gross_monthly_income'].mean(),
-            'total_monthly_debt_payments': user_rows['total_monthly_debt_payments'].sum(),
-            'total_credit_limit': user_rows['total_credit_limit'].mean(),
-            'credit_history_length_months': user_rows['credit_history_length_months'].mean(),
-            'late_payment_count': user_rows['late_payment_count'].sum(),
-            'new_credit_inquiries_last_6m': user_rows['new_credit_inquiries_last_6m'].sum()
-        }
-        
-        userScore = calculate_credit_score(aggregated_data)
-        return userScore, username, None
-    else:
-        return None, "Invalid username or password"
-
+   try:
+       df = pd.read_csv(CSV_FILE)
+   except FileNotFoundError:
+       return None, "CSV file not found"
+   user_row = df[(df['username'] == username) & (df['password'] == password)]
+   if not user_row.empty:
+       userScore = calculate_credit_score(user_row.iloc[0].to_dict())
+       return userScore, username, None
+   else:
+       return None, "Invalid username or password"
 
 
 def calculate_credit_score(user_data: dict) -> int:
