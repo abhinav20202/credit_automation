@@ -10,10 +10,10 @@ class Credentials(BaseModel):
 
 @router.post("/login")
 def login(credentials: Credentials):
-    userScore, username, error = authenticate_user(credentials.username, credentials.password)
+    userScore, username, financial_health, error = authenticate_user(credentials.username, credentials.password)
     if error:
         raise HTTPException(status_code=401, detail=error)
-    return {"username": username, "credit_score": userScore}  # Return both username and credit score
+    return {"username": username, "credit_score": userScore, "financial_health": financial_health}  # Return both username and credit score
 
 class UserData(BaseModel):
    gross_monthly_income:float
