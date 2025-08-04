@@ -10,10 +10,10 @@ class Credentials(BaseModel):
 
 @router.post("/login")
 def login(credentials: Credentials):
-    userScore, username, financial_health,monthly_income, total_debt, error = authenticate_user(credentials.username, credentials.password)
+    userScore, username, financial_health,monthly_income, total_debt, payment_history, error = authenticate_user(credentials.username, credentials.password)
     if error:
         raise HTTPException(status_code=401, detail=error)
-    return {"username": username, "credit_score": userScore, "financial_health": financial_health, "monthly_income": monthly_income, "total_debt": total_debt}  # Return both username and credit score
+    return {"username": username, "credit_score": userScore, "financial_health": financial_health, "monthly_income": monthly_income, "total_debt": total_debt, "payment_history": payment_history}  # Return both username and credit score
 
 class UserData(BaseModel):
    gross_monthly_income:float
@@ -49,9 +49,9 @@ def predict_user_score(input_data: UserPredictionInput):
     """
     try:
         # Call the get_user_prediction function with the username
-        prediction = get_user_prediction(input_data.username)
-        if prediction is None:
+        result  = get_user_prediction(input_data.username)
+        if result is None:
             raise HTTPException(status_code=404, detail="Prediction could not be generated for the given username.")
-        return {"username": input_data.username, "prediction": prediction}
+        return {"prediction": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))  

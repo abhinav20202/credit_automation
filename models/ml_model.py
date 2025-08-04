@@ -49,7 +49,8 @@ def _forecast_user_scores(user_scores):
 
 def get_user_prediction(username: str):
     """
-    This function receives a username and returns its prediction for that user's next two month's score.
+    This function receives a username and returns its prediction for that user's next two month's score,
+    along with the user's historical scores as a dictionary.
     """
     # User data is repeated for each transaction, so we'll create a dataframe
     # with unique users to work with their scores.
@@ -58,19 +59,24 @@ def get_user_prediction(username: str):
 
     # Check if the user exists in the dataset
     if username not in user_df.index:
-        return f"User '{username}' not found."
+        return {"error": f"User '{username}' not found."}
 
     # We select just the score columns to create our time series data for the user.
     user_scores = user_df.loc[username][score_columns]
+
+    # Convert user_scores to a dictionary
+    user_scores_dict = user_scores.to_dict()
 
     # Generate the forecast for the specified user
     forecasted_scores = _forecast_user_scores(user_scores)
 
     if forecasted_scores is not None:
-        prediction = {
-            "next_month_score": round(forecasted_scores.iloc[0], 2),
-            "following_month_score": round(forecasted_scores.iloc[1], 2)
-        }
-        return prediction
+        # Create the prediction dictionary
+        
+        user_scores_dict["next_month_score"] = round(forecasted_scores.iloc[0], 2)
+        user_scores_dict["following_month_score"] = round(forecasted_scores.iloc[1], 2)
+
+        return user_scores_dict
     else:
-        return "Could not generate a forecast for the user."
+        return {"error": "Could not generate a forecast for the user."}
+
