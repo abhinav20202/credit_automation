@@ -10,9 +10,14 @@ def authenticate_user(username: str, password: str):
        return None, "CSV file not found"
    user_row = df[(df['username'] == username) & (df['password'] == password)]
    if not user_row.empty:
+       user_data = user_row.iloc[0]
        userScore = calculate_credit_score(user_row.iloc[0].to_dict())
        financial_health= get_financial_health(username)
-       return userScore, username,financial_health, None
+       monthly_income = float(user_data['gross_monthly_income'])
+       total_debt = float(user_data['total_monthly_debt_payments'])
+
+
+       return userScore, username,financial_health,monthly_income, total_debt, None
    else:
        return None, "Invalid username or password"
 
@@ -109,5 +114,5 @@ def get_financial_health(username: str):
         return f"User '{username}' not found."
     # Return the financial health percentage for the user
     financial_health = user_data["financial_health_percent"].iloc[0]
-    return f"Financial Health for {username}: {financial_health:.2f}%"
+    return(int(financial_health))
  
