@@ -251,8 +251,8 @@ def get_user_payment_history_ratio(username: str) -> float | None:
  
     if total_payments == 0:
         # If there are no recorded payments, assume a perfect history
-        return 1.0
+        return 1.0*100 
  
     # Calculate and return the payment history ratio
-    ratio = on_time_payments_count / total_payments
-    return ratio
+    ratio = (on_time_payments_count / total_payments)
+    return(int(ratio*100))
